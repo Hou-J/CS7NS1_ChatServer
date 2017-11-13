@@ -7,7 +7,7 @@ import sys, socket, re
 host, port, student_id = '127.0.0.1', 5555, 17304249  # sys.argv[1], int(sys.argv[2]), int(sys.argv[3])
 
 # host, port = sys.argv[1], int(sys.argv[2])
-student_id = 17304249
+# student_id = 17304249
 
 class Server:
     def __init__(self, host, port, student_id, chat_room):
@@ -36,17 +36,19 @@ class Server:
         if (self.flag == False):
             return
         self.flag = False
+        for client in self.clients:
+            client.stop()
         print("Server is killed")
         exit()
 
 
-class Chatroom:
+class ChatRoom:
     def __init__(self):
         self.client_names = []
         self.chat_rooms = []
         self.client_sockets = []
 
-    def getClientID(self, client_name):
+    def getClientID(self,client_name):
         # try:
         #     self.client_names.index(client_name)
         # if(self.client_names[self.client_names.index(client_name)]):
@@ -69,35 +71,41 @@ class Chatroom:
     def addClientToChatroom(self, chatroom, client_id):
         found = False
         room_ref = None
-        for rr, value in self.chat_rooms:
+        for rr,value in self.chat_rooms:
             if value == chatroom:
                 found = True
                 room_ref = rr
                 client_id.append(self.chat_rooms[rr]["values"])
                 break
-        if (found == False):
-            self.chat_rooms.append({"name": chatroom, "values": client_id})
-            room_ref = self.chat_rooms.index({"name": chatroom, "values": client_id}) + 1
+        if(found == False):
+            self.chat_rooms.append({"name" : chatroom, "values" : client_id})
+            room_ref = self.chat_rooms.index({"name" : chatroom,"values" : client_id}) + 1
 
         return room_ref
+
+
+    def removeClientFromChatroom(self, client_id, room_ref):
+        pass
+
+    def getClientChatrooms(self, client_id):
+        pass
 
     def sendMessageToChatroom(self, room_ref, client_name, message):
 
         if client_name in self.client_names:
             client_ids = [self.chat_rooms[room_ref - 1]["values"]]
-            message_mar = "CHAT:" + str(
-                room_ref) + "\nCLIENT_NAME:" + client_name + "\nMESSAGE:" + message.strip() + "\n\n"
+            message_mar = "CHAT:" + str(room_ref) + "\nCLIENT_NAME:" + client_name + "\nMESSAGE:" + message.strip() + "\n\n"
             for client_id in client_ids:
                 self.sendMessageToClient(client_id, message_mar)
-                # try:
-                #     self.client_names[client_name]
-                # except NameError:
-                #     return
-                # else:
-                #     client_ids = self.chat_rooms[room_ref]["values"]
-                #     message_mar = "CHAT:" + room_ref + "\nCLIENT_NAME:" + client_name + "\nMESSAGE:" + message.strip() + "\n\n"
-                #     for client_id in client_ids:
-                #         self.sendMessageToClient(client_id,message_mar)
+        # try:
+        #     self.client_names[client_name]
+        # except NameError:
+        #     return
+        # else:
+        #     client_ids = self.chat_rooms[room_ref]["values"]
+        #     message_mar = "CHAT:" + room_ref + "\nCLIENT_NAME:" + client_name + "\nMESSAGE:" + message.strip() + "\n\n"
+        #     for client_id in client_ids:
+        #         self.sendMessageToClient(client_id,message_mar)
 
     def sendMessageToClient(self, client_id, message):
         socket = self.getClientSocket(client_id)
@@ -106,15 +114,16 @@ class Chatroom:
     def storeClientSocket(self, client_id, socket):
         self.client_sockets.append(socket)
 
+    def deleteClientSocket(self, client_id):
+        pass
+
     def getClientSocket(self, client_id):
         try:
             self.client_sockets[client_id - 1]
         except NameError:
             return None
         else:
-            # print("getgetgetgetget",self.client_sockets[client_id - 1], "!!!!!!!!!!!!!!!!!!!")
             return self.client_sockets[client_id - 1]
-
 
 class Client:
     def __init__(self, socket, host, port, studentid, chat_room, server):
@@ -124,6 +133,9 @@ class Client:
         self.studentid = studentid
         self.chat_room = chat_room
         self.server = server
+
+    def stop(self):
+        self.flag = False
 
     def processSocket(self):
         if self.client:
@@ -135,7 +147,6 @@ class Client:
                 if result[0:5] == "HELO ":
                     message = result + "IP:" + self.host + "\nPort:" + str(self.port) + "\nStudentID:" + str(
                         self.studentid)
-                    # print(message, "!!!!!!!!!!!!!!!!!!!")
                     self.client.send(message.encode())
                     print(message, '\n')
                     return True
@@ -168,22 +179,21 @@ class Client:
             line = result.split(':')
             chatroom = re.sub('\nCLIENT_IP', ' ', line[1]).strip()
             client_ip = re.sub("\nPORT", "", line[2]).strip()
-            ipport = re.sub("\nCLIENT_NAME", "", line[3]).strip()
+            ipport = re.sub("\nCLIENT_NAME","",line[3]).strip()
             client_name = line[4].strip()
             # print(chatroom,"@",client_ip,"@",ipport,"@",client_name, "!!!!!!!!!!!!!!!!!!!")
 
             client_id = self.chat_room.getClientID(client_name)
             room_ref = self.chat_room.addClientToChatroom(chatroom, client_id)
             self.chat_room.storeClientSocket(client_id, socket)
-            message = "JOINED_CHATROOM:" + str(chatroom) + "\nSERVER_IP:" + hostip + "\nPORT:" + str(
-                port) + "\nROOM_REF:" + str(room_ref) + "\nJOIN_ID: " + str(client_id) + "\n"
+            message = "JOINED_CHATROOM:" + str(chatroom) + "\nSERVER_IP:" + hostip + "\nPORT:" + str(port) + "\nROOM_REF:" + str(room_ref) + "\nJOIN_ID: " + str(client_id) + "\n"
             self.client.send(message.encode())
-            print("sent to client:\n", message)
-            message = client_name + "has joined this chatroom."
+            print("sent to client:\n",message)
+            message = client_name+"has joined this chatroom."
             self.chat_room.sendMessageToChatroom(room_ref, client_name, message)
             return True
-        else:
-            return False
+        else: return False
+
 
     def leaveChatroom(self, result, socket):
         pass
@@ -194,6 +204,7 @@ class Client:
     def chat(self, result, socket):
         pass
 
-chat_room = Chatroom()
+
+chat_room = ChatRoom()
 server = Server(host, port, student_id, chat_room)
 server.run()

@@ -205,7 +205,24 @@ class Client:
 
 
     def leaveChatroom(self, result, socket):
-        pass
+        if result[0:len(MSG_leave)] == MSG_leave:
+            print(MSG_leave,"function begins:")
+            # LEAVE_CHATROOM: 1
+            # JOIN_ID: 1
+            # CLIENT_NAME: client1
+            line = result.split(':')
+            room_ref = re.sub('\nJOIN_ID', ' ', line[1]).strip()
+            client_id = re.sub("\nCLIENT_NAME", "", line[2]).strip()
+            client_name = line[3].strip()
+            # print(line,"$#$#$#",room_ref,"@","@",client_id,"@",client_name, "!!!!!!!!!!!!!!!!!!!")
+            message = "LEFT_CHATROOM: "+ room_ref  + "\nJOIN_ID: " + client_id + "\n"
+            self.client.send(message.encode())
+            print("sent to client:\n", message)
+            message = client_name + "has left this chatroom."
+            self.chat_room.removeClientFromChatroom(client_id,room_ref)
+            self.chat_room.sendMessageToChatroom(room_ref, client_name, message)
+            return True
+        else: return False
 
     def disconnect(self, result, socket):
         pass

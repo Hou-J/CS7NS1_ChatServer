@@ -11,15 +11,15 @@ sock.connect(('127.0.0.1',5555))
 
 # sock.send(b'ssssssss\n')
 
-sock.send(b'JOIN_CHATROOM: cccccroom 1\n'+
-		  b'CLIENT_IP: 127.0.0.1\n'+
-		  b'PORT: 5555\n'+
-		  b'CLIENT_NAME: Client 1\n')
+# sock.send(b'JOIN_CHATROOM: cccccroom 1\n'+
+# 		  b'CLIENT_IP: 127.0.0.1\n'+
+# 		  b'PORT: 5555\n'+
+# 		  b'CLIENT_NAME: Client 1\n')
 
 #
-# sock.send(b'LEAVE_CHATROOM:: chatroom 1\n'+
-# 		  b'JOIN_ID: \n'+
-# 		  b'CLIENT_NAME: \n')
+sock.send(b'LEAVE_CHATROOM:: chatroom 1\n'+
+		  b'JOIN_ID: \n'+
+		  b'CLIENT_NAME: \n')
 
 #
 #

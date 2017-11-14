@@ -9,6 +9,15 @@ host, port, student_id = '127.0.0.1', 5555, 17304249  # sys.argv[1], int(sys.arg
 # host, port = sys.argv[1], int(sys.argv[2])
 # student_id = 17304249
 
+MSG_helo = "HELO "
+MSG_kill = "KILL_SERVICE"
+MSG_join = "JOIN_CHATROOM"
+MSG_leave = "LEAVE_CHATROOM"
+MSG_chat = "CHAT"
+MSG_disconn = "DISCONNECT"
+
+
+
 class Server:
     def __init__(self, host, port, student_id, chat_room):
         self.host = host
@@ -144,13 +153,13 @@ class Client:
                 return self.closeSocket()
             else:
                 print('Recieved from client:\n', result)
-                if result[0:5] == "HELO ":
+                if result[0:len(MSG_helo)] == MSG_helo:
                     message = result + "IP:" + self.host + "\nPort:" + str(self.port) + "\nStudentID:" + str(
                         self.studentid)
                     self.client.send(message.encode())
                     print(message, '\n')
                     return True
-                elif result[0:12] == "KILL_SERVICE":
+                elif result[0:len(MSG_kill)] == MSG_kill:
                     self.server.killServer()
                     return False
                 else:
@@ -174,8 +183,8 @@ class Client:
         return False
 
     def joinChatroom(self, result, socket, hostip, port):
-        if result[0:len("JOIN_CHATROOM")] == "JOIN_CHATROOM":
-            print("JOIN_CHATROOM:")
+        if result[0:len(MSG_join)] == MSG_join:
+            print(MSG_join+":")
             line = result.split(':')
             chatroom = re.sub('\nCLIENT_IP', ' ', line[1]).strip()
             client_ip = re.sub("\nPORT", "", line[2]).strip()

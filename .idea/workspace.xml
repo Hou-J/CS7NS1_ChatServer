@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="154c37be-abdc-40f3-a6f5-dde5fcc9b5aa" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Server.py" afterPath="$PROJECT_DIR$/Server.py" />
     </list>
     <list id="f88dc9d2-9374-43ad-9d6d-481147b188c1" name="delet strange file" comment="" />
@@ -18,8 +17,8 @@
       <file leaf-file-name="Server.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Server.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="537">
-              <caret line="114" column="42" lean-forward="false" selection-start-line="114" selection-start-column="42" selection-end-line="114" selection-end-column="42" />
+            <state relative-caret-position="639">
+              <caret line="267" column="49" lean-forward="false" selection-start-line="267" selection-start-column="49" selection-end-line="267" selection-end-column="49" />
               <folding />
             </state>
           </provider>
@@ -222,8 +221,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Server.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="537">
-          <caret line="114" column="42" lean-forward="false" selection-start-line="114" selection-start-column="42" selection-end-line="114" selection-end-column="42" />
+        <state relative-caret-position="639">
+          <caret line="267" column="49" lean-forward="false" selection-start-line="267" selection-start-column="49" selection-end-line="267" selection-end-column="49" />
           <folding />
         </state>
       </provider>

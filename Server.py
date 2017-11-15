@@ -238,9 +238,34 @@ class Client:
             return False
 
     def disconnect(self, result, socket):
-        pass
+        if result[0:len(MSG_disconn)] == MSG_disconn:
+            print(MSG_disconn,"function begins:")
+            # DISCONNECT: 0
+            # PORT: 0
+            # CLIENT_NAME: client1
+            line = result.split(':')
+            ip = re.sub('\nPORT', ' ', line[1]).strip()
+            ipport = re.sub("\nCLIENT_NAME", "", line[2]).strip()
+            client_name = line[3].strip()
+            client_id = self.chat_room.getClientID(client_name)
+            message = client_name," has left this chatroom."
+            room_refs = self.chat_room.getClientChatrooms(client_id)
+            for i in range(0,len(room_refs)):
+                self.chat_room.sendMessageToChatroom(room_refs[i],client_name,message)
+                print("removing from room ",room_refs[i])
+                self.chat_room.removeClientFromChatroom(client_id,room_refs[i])
+            self.client.close(self.client)
+            self.chat_room.deleteClientSocket(client_id)
+            socket = None
+            print("function done")
+            return True
+        else: return False
 
     def chat(self, result, socket):
+        # CHAT: [ROOM_REF]
+        # JOIN_ID: [integer identifying client to server]
+        # CLIENT_NAME: [string identifying client user]
+        # MESSAGE: [string terminatedwith '\n\n']
         pass
 
 

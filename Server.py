@@ -134,7 +134,8 @@ class ChatRoom:
         self.client_sockets.append(socket)
 
     def deleteClientSocket(self, client_id):
-        pass
+        if client_id in self.client_sockets:
+            del self.client_sockets[client_id]
 
     def getClientSocket(self, client_id):
         try:

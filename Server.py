@@ -77,7 +77,7 @@ class ChatRoom:
         # else:
         #     return self.client_names[self.client_names.index(client_name)]
 
-    def addClientToChatroom(self, chatroom, client_id):
+    def addClientToChatroom(self,   chatroom, client_id):
         found = False
         room_ref = None
         for rr,value in self.chat_rooms:
@@ -93,11 +93,21 @@ class ChatRoom:
         return room_ref
 
 
-    def removeClientFromChatroom(self, client_id, room_ref):
-        pass
+    def removeClientFromChatroom(self, client_id,   room_ref):
+        for key,value in self.chat_rooms:
+            if key == room_ref:
+                k = client_id.index(value["values"])
+                if k != False:
+                    del self.chat_rooms[key]["values"][k]
+                return
 
-    def getClientChatrooms(self, client_id):
-        pass
+    def getClientChatrooms(self,   client_id):
+        rooms = []
+        for key, value in self.chat_rooms:
+            k = client_id.index(value["values"])
+            if k != False:
+                rooms.append(key)
+        return rooms
 
     def sendMessageToChatroom(self, room_ref, client_name, message):
 

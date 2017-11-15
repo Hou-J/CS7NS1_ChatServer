@@ -17,7 +17,6 @@ MSG_chat = "CHAT"
 MSG_disconn = "DISCONNECT"
 
 
-
 class Server:
     def __init__(self, host, port, student_id, chat_room):
         self.host = host
@@ -57,7 +56,7 @@ class ChatRoom:
         self.chat_rooms = []
         self.client_sockets = []
 
-    def getClientID(self,client_name):
+    def getClientID(self, client_name):
         # try:
         #     self.client_names.index(client_name)
         # if(self.client_names[self.client_names.index(client_name)]):
@@ -70,38 +69,37 @@ class ChatRoom:
             return client_id
 
 
-        # except :
-        #     client_id = self.id + 1
-        #     self.client_names[self.client_names.index(client_name)] = client_id
-        #     return client_id;
-        # else:
-        #     return self.client_names[self.client_names.index(client_name)]
+            # except :
+            #     client_id = self.id + 1
+            #     self.client_names[self.client_names.index(client_name)] = client_id
+            #     return client_id;
+            # else:
+            #     return self.client_names[self.client_names.index(client_name)]
 
-    def addClientToChatroom(self,   chatroom, client_id):
+    def addClientToChatroom(self, chatroom, client_id):
         found = False
         room_ref = None
-        for rr,value in self.chat_rooms:
+        for rr, value in self.chat_rooms:
             if value == chatroom:
                 found = True
                 room_ref = rr
                 client_id.append(self.chat_rooms[rr]["values"])
                 break
-        if(found == False):
-            self.chat_rooms.append({"name" : chatroom, "values" : client_id})
-            room_ref = self.chat_rooms.index({"name" : chatroom,"values" : client_id}) + 1
+        if (found == False):
+            self.chat_rooms.append({"name": chatroom, "values": client_id})
+            room_ref = self.chat_rooms.index({"name": chatroom, "values": client_id}) + 1
 
         return room_ref
 
-
-    def removeClientFromChatroom(self, client_id,   room_ref):
-        for key,value in self.chat_rooms:
+    def removeClientFromChatroom(self, client_id, room_ref):
+        for key, value in self.chat_rooms:
             if key == room_ref:
                 k = client_id.index(value["values"])
                 if k != False:
                     del self.chat_rooms[key]["values"][k]
                 return
 
-    def getClientChatrooms(self,   client_id):
+    def getClientChatrooms(self, client_id):
         rooms = []
         for key, value in self.chat_rooms:
             k = client_id.index(value["values"])
@@ -113,18 +111,19 @@ class ChatRoom:
 
         if client_name in self.client_names:
             client_ids = [self.chat_rooms[room_ref - 1]["values"]]
-            message_mar = "CHAT:" + str(room_ref) + "\nCLIENT_NAME:" + client_name + "\nMESSAGE:" + message.strip() + "\n\n"
+            message_mar = "CHAT:" + str(
+                room_ref) + "\nCLIENT_NAME:" + client_name + "\nMESSAGE:" + message.strip() + "\n\n"
             for client_id in client_ids:
                 self.sendMessageToClient(client_id, message_mar)
-        # try:
-        #     self.client_names[client_name]
-        # except NameError:
-        #     return
-        # else:
-        #     client_ids = self.chat_rooms[room_ref]["values"]
-        #     message_mar = "CHAT:" + room_ref + "\nCLIENT_NAME:" + client_name + "\nMESSAGE:" + message.strip() + "\n\n"
-        #     for client_id in client_ids:
-        #         self.sendMessageToClient(client_id,message_mar)
+                # try:
+                #     self.client_names[client_name]
+                # except NameError:
+                #     return
+                # else:
+                #     client_ids = self.chat_rooms[room_ref]["values"]
+                #     message_mar = "CHAT:" + room_ref + "\nCLIENT_NAME:" + client_name + "\nMESSAGE:" + message.strip() + "\n\n"
+                #     for client_id in client_ids:
+                #         self.sendMessageToClient(client_id,message_mar)
 
     def sendMessageToClient(self, client_id, message):
         socket = self.getClientSocket(client_id)
@@ -144,6 +143,7 @@ class ChatRoom:
             return None
         else:
             return self.client_sockets[client_id - 1]
+
 
 class Client:
     def __init__(self, socket, host, port, studentid, chat_room, server):
@@ -195,29 +195,30 @@ class Client:
 
     def joinChatroom(self, result, socket, hostip, port):
         if result[0:len(MSG_join)] == MSG_join:
-            print(MSG_join+":")
+            print(MSG_join + ":")
             line = result.split(':')
             chatroom = re.sub('\nCLIENT_IP', ' ', line[1]).strip()
             client_ip = re.sub("\nPORT", "", line[2]).strip()
-            ipport = re.sub("\nCLIENT_NAME","",line[3]).strip()
+            ipport = re.sub("\nCLIENT_NAME", "", line[3]).strip()
             client_name = line[4].strip()
             # print(chatroom,"@",client_ip,"@",ipport,"@",client_name, "!!!!!!!!!!!!!!!!!!!")
 
             client_id = self.chat_room.getClientID(client_name)
             room_ref = self.chat_room.addClientToChatroom(chatroom, client_id)
             self.chat_room.storeClientSocket(client_id, socket)
-            message = "JOINED_CHATROOM:" + str(chatroom) + "\nSERVER_IP:" + hostip + "\nPORT:" + str(port) + "\nROOM_REF:" + str(room_ref) + "\nJOIN_ID: " + str(client_id) + "\n"
+            message = "JOINED_CHATROOM:" + str(chatroom) + "\nSERVER_IP:" + hostip + "\nPORT:" + str(
+                port) + "\nROOM_REF:" + str(room_ref) + "\nJOIN_ID: " + str(client_id) + "\n"
             self.client.send(message.encode())
-            print("sent to client:\n",message)
-            message = client_name+"has joined this chatroom."
+            print("sent to client:\n", message)
+            message = client_name + "has joined this chatroom."
             self.chat_room.sendMessageToChatroom(room_ref, client_name, message)
             return True
-        else: return False
-
+        else:
+            return False
 
     def leaveChatroom(self, result, socket):
         if result[0:len(MSG_leave)] == MSG_leave:
-            print(MSG_leave,"function begins:")
+            print(MSG_leave, "function begins:")
             # LEAVE_CHATROOM: 1
             # JOIN_ID: 1
             # CLIENT_NAME: client1
@@ -226,14 +227,15 @@ class Client:
             client_id = re.sub("\nCLIENT_NAME", "", line[2]).strip()
             client_name = line[3].strip()
             # print(line,"$#$#$#",room_ref,"@","@",client_id,"@",client_name, "!!!!!!!!!!!!!!!!!!!")
-            message = "LEFT_CHATROOM: "+ room_ref  + "\nJOIN_ID: " + client_id + "\n"
+            message = "LEFT_CHATROOM: " + room_ref + "\nJOIN_ID: " + client_id + "\n"
             self.client.send(message.encode())
             print("sent to client:\n", message)
             message = client_name + "has left this chatroom."
-            self.chat_room.removeClientFromChatroom(client_id,room_ref)
+            self.chat_room.removeClientFromChatroom(client_id, room_ref)
             self.chat_room.sendMessageToChatroom(room_ref, client_name, message)
             return True
-        else: return False
+        else:
+            return False
 
     def disconnect(self, result, socket):
         pass

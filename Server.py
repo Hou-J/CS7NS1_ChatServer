@@ -68,7 +68,6 @@ class ChatRoom:
 
             return client_id
 
-
             # except :
             #     client_id = self.id + 1
             #     self.client_names[self.client_names.index(client_name)] = client_id
@@ -195,7 +194,7 @@ class Client:
 
     def joinChatroom(self, result, socket, hostip, port):
         if result[0:len(MSG_join)] == MSG_join:
-            print(MSG_join + ":")
+            print(MSG_join, "function begins:")
             line = result.split(':')
             chatroom = re.sub('\nCLIENT_IP', ' ', line[1]).strip()
             client_ip = re.sub("\nPORT", "", line[2]).strip()
@@ -239,7 +238,7 @@ class Client:
 
     def disconnect(self, result, socket):
         if result[0:len(MSG_disconn)] == MSG_disconn:
-            print(MSG_disconn,"function begins:")
+            print(MSG_disconn, "function begins:")
             # DISCONNECT: 0
             # PORT: 0
             # CLIENT_NAME: client1
@@ -248,27 +247,55 @@ class Client:
             ipport = re.sub("\nCLIENT_NAME", "", line[2]).strip()
             client_name = line[3].strip()
             client_id = self.chat_room.getClientID(client_name)
-            message = client_name," has left this chatroom."
+            message = client_name, " has left this chatroom."
             room_refs = self.chat_room.getClientChatrooms(client_id)
-            for i in range(0,len(room_refs)):
-                self.chat_room.sendMessageToChatroom(room_refs[i],client_name,message)
-                print("removing from room ",room_refs[i])
-                self.chat_room.removeClientFromChatroom(client_id,room_refs[i])
+            for i in range(0, len(room_refs)):
+                self.chat_room.sendMessageToChatroom(room_refs[i], client_name, message)
+                print("removing from room ", room_refs[i])
+                self.chat_room.removeClientFromChatroom(client_id, room_refs[i])
             self.client.close(self.client)
             self.chat_room.deleteClientSocket(client_id)
             socket = None
             print("function done")
             return True
-        else: return False
+        else:
+            return False
 
     def chat(self, result, socket):
-        # CHAT: [ROOM_REF]
-        # JOIN_ID: [integer identifying client to server]
-        # CLIENT_NAME: [string identifying client user]
-        # MESSAGE: [string terminatedwith '\n\n']
-        pass
+        if result[0:len(MSG_chat)] == MSG_chat:
+            print(MSG_chat, "function begins:")
+            # CHAT: [ROOM_REF]
+            # JOIN_ID: [integer identifying client to server]
+            # CLIENT_NAME: [string identifying client user]
+            # MESSAGE: [string terminatedwith '\n\n']
+            line = result.split(':')
+            room_ref = re.sub('\nJOIN_ID', '', line[1]).strip()
+            join_id = re.sub("\nCLIENT_NAME", "", line[2]).strip()
+            client_name = re.sub("\nMESSAGE",'',line[3]).strip()
+            message = line[4].strip()
+            # print(room_ref+"\n"+join_id+"\n"+client_name+"\n"+message)
+            self.chat_room.sendMessageToChatroom(room_ref,client_name,message)
+            return True
 
 
 chat_room = ChatRoom()
 server = Server(host, port, student_id, chat_room)
 server.run()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

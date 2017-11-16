@@ -271,31 +271,15 @@ class Client:
             line = result.split(':')
             room_ref = re.sub('\nJOIN_ID', '', line[1]).strip()
             join_id = re.sub("\nCLIENT_NAME", "", line[2]).strip()
-            client_name = re.sub("\nMESSAGE",'',line[3]).strip()
+            client_name = re.sub("\nMESSAGE", '', line[3]).strip()
             message = line[4].strip()
             # print(room_ref+"\n"+join_id+"\n"+client_name+"\n"+message)
-            self.chat_room.sendMessageToChatroom(room_ref,client_name,message)
+            self.chat_room.sendMessageToChatroom(room_ref, client_name, message)
             return True
+        else:
+            return False
 
 
 chat_room = ChatRoom()
 server = Server(host, port, student_id, chat_room)
 server.run()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

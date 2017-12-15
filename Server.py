@@ -1,13 +1,13 @@
 import sys, socket, re
 
-# if (len(sys.argv) < 3):
-#     print("Server usage: python Server.py [IP] [PORT]")
-#     sys.exit(0)
+if (len(sys.argv) < 3):
+    print("Server usage: python Server.py [IP] [PORT]")
+    sys.exit(0)
 
-host, port, student_id = '127.0.0.1', 5555, 17304249  # sys.argv[1], int(sys.argv[2]), int(sys.argv[3])
+host, port, student_id = sys.argv[1], int(sys.argv[2]), int(sys.argv[3])
 
-# host, port = sys.argv[1], int(sys.argv[2])
-# student_id = 17304249
+host, port = sys.argv[1], int(sys.argv[2])
+student_id = 17304249
 
 MSG_helo = "HELO "
 MSG_kill = "KILL_SERVICE"
